@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DBConnectionSetter\Helpers;
+namespace Karu\DBConnectionSetter\Helpers;
 
 use Cache;
 use DB;
