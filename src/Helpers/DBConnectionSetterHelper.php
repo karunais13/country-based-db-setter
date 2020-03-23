@@ -12,7 +12,10 @@ class DBConnectionSetterHelper
 
     public function setDBConnection($country)
     {
-        config(['database.connections.mysql.database' => strtolower($country).'_'.config('db.default-mysql.database') ]);
+        $defaultConfig = require 'db.php';
+
+        config(['database.connections.mysql.database' => strtolower($country).'_'.$defaultConfig['default-mysql']['database']]);
+
     }
 
     public function checkDBExists($country): ?bool
