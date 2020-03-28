@@ -37,7 +37,7 @@ class DBConnectionSetterHelper
 
             Cache::tags(self::DB_CONNECTION_CACHE_KEY)->forget($this->generateCacheKey($country));
 
-            dump($e->getMessage());
+            dump('Database doesn\'t exists : '.config('database.connections.mysql.database'));
 
             return FALSE;
         }
