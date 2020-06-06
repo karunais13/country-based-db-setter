@@ -45,8 +45,8 @@ class CustomSeed extends SeedCommand
     {
         DBConnectionHelper::setDBConnection($this->_country);
 
-        dump('Database Connection : '. config('database.default'));
+        dump('Database Connection : '. config('database.connections.currentHost.database'));
 
-        return $this->laravel['config']['database.default'];
+        return 'currentHost';
     }
 }

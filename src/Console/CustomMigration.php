@@ -54,12 +54,12 @@ class CustomMigration extends MigrateCommand
     {
         DBConnectionHelper::setDBConnection($this->_country);
 
-        dump('Database Connection : '. config('database.connections.mysql.database'));
+        dump('Database Connection : '. config('database.connections.currentHost.database'));
 
         if (! $this->migrator->repositoryExists()) {
 
             $this->call('migrate:install', array_filter([
-                '--database' => config('database.default'),
+                '--database' => 'currentHost',
             ]));
         }
     }
