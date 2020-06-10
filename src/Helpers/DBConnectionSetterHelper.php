@@ -16,7 +16,7 @@ class DBConnectionSetterHelper
 
         $defaultConfig = require 'db.php';
 
-        $db = strtolower($country).'_'.strtolower($country).'_'.$defaultConfig['default-mysql']['database'];
+        $db = strtolower($country).'_'.$defaultConfig['default-mysql']['database'];
 
         config(['database.connections.currentHost' => [
             'driver' => 'mysql',
@@ -40,13 +40,19 @@ class DBConnectionSetterHelper
         DB::setDefaultConnection('currentHost');
     }
 
-    public function setOtherDbConnection($country, $connection, $baseDb)
+    public function setOtherDbConnection($country, $connection, $baseDb, $isInitial=false)
     {
         $country = strtolower($country);
-        $db = "{$baseDb}_{$country}";
+
+        if( $isInitial ){
+            $db = "{$country}_{$baseDb}";
+        }else{
+            $db = "{$baseDb}_{$country}";
+        }
 
         config(["database.connections.{$connection}.database" => $db]);
     }
+
 
     public function checkDBExists($country): ?bool
     {
@@ -55,11 +61,11 @@ class DBConnectionSetterHelper
             $this->setDBConnection($country);
 
             $dbExists = Cache::tags(self::DB_CONNECTION_CACHE_KEY)->remember($this->generateCacheKey($country), 365*86400, function(){
-                return DB::table('information_schema.schemata')->where('schema_name', config('database.connections.mysql.database') )->exists();
+                return DB::table('information_schema.schemata')->where('schema_name', config('database.connections.currentHost.database') )->exists();
             });
 
             if( !$dbExists )
-                throw new \Exception('Database doesn\'t exists : '.config('database.connections.mysql.database'));
+                throw new \Exception('Database doesn\'t exists : '.config('database.connections.currentHost.database'));
 
             return TRUE;
 
@@ -67,7 +73,7 @@ class DBConnectionSetterHelper
 
             Cache::tags(self::DB_CONNECTION_CACHE_KEY)->forget($this->generateCacheKey($country));
 
-            $msg = 'Database doesn\'t exists : '.config('database.connections.mysql.database');
+            $msg = 'Database doesn\'t exists : '.config('database.connections.currentHost.database');
 
             if( app()->runningInConsole() ){
                 dump($msg);
