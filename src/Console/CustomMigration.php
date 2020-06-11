@@ -10,6 +10,7 @@ class CustomMigration extends MigrateCommand
     private $_country;
 
     protected $signature = 'migrate-all {--force : Force the operation to run when in production}
+                {--database= : The database connection to use}
                 {--path= : The path to the migrations files to be executed}
                 {--realpath : Indicate any provided migration file paths are pre-resolved absolute paths}
                 {--pretend : Dump the SQL queries that would be run}

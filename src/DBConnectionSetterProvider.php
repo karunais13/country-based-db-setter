@@ -3,6 +3,7 @@
 namespace Karu\DBConnectionSetter;
 
 use Illuminate\Support\ServiceProvider;
+use Karu\DBConnectionSetter\Console\ClearCache;
 use Karu\DBConnectionSetter\Console\CustomMigration;
 use Karu\DBConnectionSetter\Console\CustomQueueWork;
 use Karu\DBConnectionSetter\Console\CustomSeed;
@@ -39,8 +40,17 @@ class DBConnectionSetterProvider extends ServiceProvider
 //        });
         $this->commands(
             'command.migrate-all',
-            'command.db.seed-all'
+            'command.db.seed-all',
+            'command.db.connection-clear'
         );
+
+        $this->app->singleton(
+            'command.db.connection-clear',
+            function ($app) {
+                return new ClearCache();
+            }
+        );
+
     }
 
     /**

@@ -110,4 +110,8 @@ class DBConnectionSetterHelper
         return $this->countryListing()->where($field, $keyword)->first();
     }
 
+    public function countryCacheTag()
+    {
+        return self::DB_CONNECTION_CACHE_KEY;
+    }
 }
