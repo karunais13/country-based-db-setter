@@ -13,10 +13,10 @@ class DBConnectionSetterHelper
     public function setDBConnection($country)
     {
         DB::purge('currentHost');
+        DB::purge('mongodb');
 
-        $defaultConfig = require 'db.php';
 
-        $db = strtolower($country).'_'.$defaultConfig['default-mysql']['database'];
+        $db = strtolower($country).'_'.config('database.connections.default-mysql.database');
 
         config(['database.connections.currentHost' => [
             'driver' => 'mysql',
@@ -38,6 +38,17 @@ class DBConnectionSetterHelper
         config(['queue.failed.database' => 'currentHost']);
 
         DB::setDefaultConnection('currentHost');
+
+        $mongoDb = strtolower($country).'_'.config('database.connections.default-mongo.database');
+
+        config(['database.connections.mongodb' => [
+            'driver' => config('database.connections.mongodb.driver'),
+            'host' => config('database.connections.mongodb.host'),
+            'port' => config('database.connections.mongodb.port'),
+            'database' => $mongoDb,
+            'username' => config('database.connections.mongodb.username'),
+            'password' => config('database.connections.mongodb.password'),
+        ]]);
     }
 
     public function setOtherDbConnection($country, $connection, $baseDb, $isInitial=false)
