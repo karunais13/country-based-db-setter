@@ -53,15 +53,35 @@ class DBConnectionSetterHelper
 
     public function setOtherDbConnection($country, $connection, $baseDb, $isInitial=false)
     {
-        $country = strtolower($country);
+        try {
 
-        if( $isInitial ){
-            $db = "{$country}_{$baseDb}";
-        }else{
-            $db = "{$baseDb}_{$country}";
+            $country = strtolower($country);
+
+            if( $isInitial ){
+                $db = "{$country}_{$baseDb}";
+            }else{
+                $db = "{$baseDb}_{$country}";
+            }
+
+            DB::purge($connection);
+
+            config(["database.connections.{$connection}.database" => $db]);
+
+            DB::connection($connection)->getPdo();
+
+            return TRUE;
+
+        } catch (\Exception $e) {
+
+            $msg = 'Database doesn\'t exists : '.config("database.connections.{$connection}.database");
+
+            if( app()->runningInConsole() ){
+                dump($msg);
+                return FALSE;
+            } else{
+                throw new \Exception($msg);
+            }
         }
-
-        config(["database.connections.{$connection}.database" => $db]);
     }
 
 
