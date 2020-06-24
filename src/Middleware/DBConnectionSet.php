@@ -30,7 +30,7 @@ class DBConnectionSet
     public function handle($request, Closure $next)
     {
 
-        $uri  = $request->route()->uri();
+        $uri  = $request->path();
         if( strlen($uri) > 0 && in_array('api', explode('/', $uri)) )
             $this->setIsApi(TRUE);
 
