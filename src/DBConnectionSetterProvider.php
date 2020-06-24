@@ -3,6 +3,7 @@
 namespace Karu\DBConnectionSetter;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 use Karu\DBConnectionSetter\Console\ClearCache;
 use Karu\DBConnectionSetter\Console\CustomMigration;
 use Karu\DBConnectionSetter\Console\CustomQueueWork;
@@ -89,8 +90,24 @@ class DBConnectionSetterProvider extends ServiceProvider
      */
     public function boot()
     {
+        if ($this->isLumen()) {
+            require_once 'laravel_helper.php';
+        }
+
         $this->publishes([
             __DIR__ . '/config/country.php' => config_path('country.php'),
         ]);
+    }
+
+
+
+    /**
+     * Check if app uses Lumen.
+     *
+     * @return bool
+     */
+    protected function isLumen()
+    {
+        return Str::contains($this->app->version(), 'Lumen');
     }
 }

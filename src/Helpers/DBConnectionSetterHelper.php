@@ -10,11 +10,12 @@ class DBConnectionSetterHelper
 
     const DB_CONNECTION_CACHE_KEY = 'db-connection';
 
+    //TODO :: Add toggle to enable/disable mongodb by country connection
+    //TODO :: Add config to use which type connection for multiple country based
     public function setDBConnection($country)
     {
         DB::purge('currentHost');
         DB::purge('mongodb');
-
 
         $db = strtolower($country).'_'.config('database.connections.default-mysql.database');
 
