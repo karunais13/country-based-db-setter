@@ -51,6 +51,23 @@ class DBConnectionSetterProvider extends ServiceProvider
                 return new ClearCache();
             }
         );
+    }
+
+    /**
+     * Bootstrap services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        if ($this->isLumen()) {
+            require_once 'laravel_helper.php';
+        }
+
+        $this->publishes([
+            __DIR__ . '/config/country.php' => config_path('country.php'),
+        ]);
+
 
         config(['database.connections.default-mysql' => [
             'driver' => 'mysql',
@@ -79,24 +96,6 @@ class DBConnectionSetterProvider extends ServiceProvider
                 'database' => env('DB_AUTHENTICATION_DATABASE_MONGODB', 'admin'), // required with Mongo 3+
             ],
         ]]);
-
-
-    }
-
-    /**
-     * Bootstrap services.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        if ($this->isLumen()) {
-            require_once 'laravel_helper.php';
-        }
-
-        $this->publishes([
-            __DIR__ . '/config/country.php' => config_path('country.php'),
-        ]);
     }
 
 

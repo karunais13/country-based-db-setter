@@ -92,7 +92,7 @@ class DBConnectionSetterHelper
 
             $this->setDBConnection($country);
 
-            $dbExists = Cache::tags(self::DB_CONNECTION_CACHE_KEY)->remember($this->generateCacheKey($country), 365*86400, function(){
+            $dbExists = $this->getCache(self::DB_CONNECTION_CACHE_KEY)->remember($this->generateCacheKey($country), 365*86400, function(){
                 return DB::table('information_schema.schemata')->where('schema_name', config('database.connections.currentHost.database') )->exists();
             });
 
@@ -103,7 +103,7 @@ class DBConnectionSetterHelper
 
         } catch (\Exception $e) {
 
-            Cache::tags(self::DB_CONNECTION_CACHE_KEY)->forget($this->generateCacheKey($country));
+            $this->getCache(self::DB_CONNECTION_CACHE_KEY)->forget($this->generateCacheKey($country));
 
             $msg = 'Database doesn\'t exists : '.config('database.connections.currentHost.database');
 
@@ -116,7 +116,7 @@ class DBConnectionSetterHelper
         }
     }
 
-    private function generateCacheKey($country)
+    public function generateCacheKey($country)
     {
         return self::DB_CONNECTION_CACHE_KEY. '_' .$country;
     }
@@ -145,5 +145,15 @@ class DBConnectionSetterHelper
     public function countryCacheTag()
     {
         return self::DB_CONNECTION_CACHE_KEY;
+    }
+
+
+    public function getCache($tag=null)
+    {
+        try{
+            return Cache::tags($tag);
+        } catch (\BadMethodCallException $e){
+            return new \Illuminate\Cache\CacheManager(app());
+        }
     }
 }

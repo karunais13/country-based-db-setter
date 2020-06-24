@@ -37,8 +37,15 @@ class ClearCache extends Command
      */
     public function handle()
     {
+        try{
+            \Cache::tags(\DBConnectionHelper::countryCacheTag())->flush();
+        } catch (\BadMethodCallException $e){
+            $country = \DBConnectionHelper::countryListing();
 
-        \Cache::tags(\DBConnectionHelper::countryCacheTag())->flush();
+            foreach ($country as $item) {
+                \Cache::forget(\DBConnectionHelper::generateCacheKey($item->country_code));
+            }
+        }
         
         $this->info('Cache Cleared');
     }

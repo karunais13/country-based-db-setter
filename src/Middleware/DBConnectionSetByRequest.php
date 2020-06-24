@@ -16,12 +16,18 @@ class DBConnectionSetByRequest
     /**
      * Handle an incoming request.
      *
-     * @param  Request  $request
-     * @param  Closure  $next
+     * @param Request $request
+     * @param Closure $next
      * @return mixed
+     * @throws \Exception
      */
     public function handle($request, Closure $next)
     {
+
+        if( !isset($request->country_code) || empty($request->country_code) ){
+            throw new \Exception('Country code is needed');
+        }
+
         $this->setCountry($request->country_code);
 
         if( $this->getCountry() ) {
