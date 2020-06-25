@@ -10,46 +10,50 @@ class DBConnectionSetterHelper
 
     const DB_CONNECTION_CACHE_KEY = 'db-connection';
 
-    //TODO :: Add toggle to enable/disable mongodb by country connection
-    //TODO :: Add config to use which type connection for multiple country based
     public function setDBConnection($country)
     {
-        DB::purge('currentHost');
-        DB::purge('mongodb');
+        if( config('dbsetter.mysql') ) {
+            DB::purge('currentHost');
 
-        $db = strtolower($country).'_'.config('database.connections.default-mysql.database');
+            $db = strtolower($country) . '_' . config('connections.default-mysql.database');
 
-        config(['database.connections.currentHost' => [
-            'driver' => 'mysql',
-            'host' => config('database.connections.mysql.host'),
-            'port' => config('database.connections.mysql.port'),
-            'database' => $db,
-            'username' => config('database.connections.mysql.username'),
-            'password' => config('database.connections.mysql.password'),
-            'unix_socket' => config('database.connections.mysql.unix_socket'),
-            'charset' => config('database.connections.mysql.charset'),
-            'collation' => config('database.connections.mysql.collation'),
-            'prefix' => config('database.connections.mysql.prefix'),
-            'prefix_indexes' => config('database.connections.mysql.prefix_indexes'),
-            'strict' => config('database.connections.mysql.strict'),
-            'engine' => config('database.connections.mysql.engine'),
-        ]]);
+            config(['database.connections.currentHost' => [
+                'driver' => 'mysql',
+                'host' => config('database.connections.mysql.host'),
+                'port' => config('database.connections.mysql.port'),
+                'database' => $db,
+                'username' => config('database.connections.mysql.username'),
+                'password' => config('database.connections.mysql.password'),
+                'unix_socket' => config('database.connections.mysql.unix_socket'),
+                'charset' => config('database.connections.mysql.charset'),
+                'collation' => config('database.connections.mysql.collation'),
+                'prefix' => config('database.connections.mysql.prefix'),
+                'prefix_indexes' => config('database.connections.mysql.prefix_indexes'),
+                'strict' => config('database.connections.mysql.strict'),
+                'engine' => config('database.connections.mysql.engine'),
+            ]]);
 
 
-        config(['queue.failed.database' => 'currentHost']);
+            config(['queue.failed.database' => 'currentHost']);
 
-        DB::setDefaultConnection('currentHost');
+            DB::setDefaultConnection('currentHost');
+        }
 
-        $mongoDb = strtolower($country).'_'.config('database.connections.default-mongo.database');
 
-        config(['database.connections.mongodb' => [
-            'driver' => config('database.connections.mongodb.driver'),
-            'host' => config('database.connections.mongodb.host'),
-            'port' => config('database.connections.mongodb.port'),
-            'database' => $mongoDb,
-            'username' => config('database.connections.mongodb.username'),
-            'password' => config('database.connections.mongodb.password'),
-        ]]);
+        if( config('dbsetter.mongodb') ) {
+            DB::purge('mongodb');
+
+            $mongoDb = strtolower($country) . '_' . config('connections.default-mongo.database');
+
+            config(['database.connections.mongodb' => [
+                'driver' => config('database.connections.mongodb.driver'),
+                'host' => config('database.connections.mongodb.host'),
+                'port' => config('database.connections.mongodb.port'),
+                'database' => $mongoDb,
+                'username' => config('database.connections.mongodb.username'),
+                'password' => config('database.connections.mongodb.password'),
+            ]]);
+        }
     }
 
     public function setOtherDbConnection($country, $connection, $baseDb, $isInitial=false)

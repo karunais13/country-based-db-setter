@@ -8,6 +8,11 @@ use Karu\DBConnectionSetter\Console\ClearCache;
 use Karu\DBConnectionSetter\Console\CustomMigration;
 use Karu\DBConnectionSetter\Console\CustomQueueWork;
 use Karu\DBConnectionSetter\Console\CustomSeed;
+use Karu\DBConnectionSetter\Console\PermisionAssignRole;
+use Karu\DBConnectionSetter\Console\PermisionAssignRoleAll;
+use Karu\DBConnectionSetter\Console\PermisionCreate;
+use Karu\DBConnectionSetter\Console\PermisionCreateDefaultRole;
+use Karu\DBConnectionSetter\Console\PermisionCreateRole;
 
 class DBConnectionSetterProvider extends ServiceProvider
 {
@@ -51,6 +56,51 @@ class DBConnectionSetterProvider extends ServiceProvider
                 return new ClearCache();
             }
         );
+
+
+        if( config('dbsetter.spatie_permission') ){
+
+
+            $this->app->singleton(
+                'command.permission:create-default-role',
+                function ($app) {
+                    return new PermisionCreateDefaultRole();
+                }
+            );
+            $this->app->singleton(
+                'command.permission:create-role',
+                function ($app) {
+                    return new PermisionCreateRole();
+                }
+            );
+            $this->app->singleton(
+                'command.permission:create-permission',
+                function ($app) {
+                    return new PermisionCreate();
+                }
+            );
+            $this->app->singleton(
+                'command.permission:assign-role',
+                function ($app) {
+                    return new PermisionAssignRole();
+                }
+            );
+            $this->app->singleton(
+                'command.permission:assign-role-all',
+                function ($app) {
+                    return new PermisionAssignRoleAll();
+                }
+            );
+
+            $this->commands(
+                'command.permission:create-default-role',
+                'command.permission:create-role',
+                'command.permission:create-permission',
+                'command.permission:assign-role',
+                'command.permission:assign-role-all'
+            );
+        }
+
     }
 
     /**
@@ -68,8 +118,13 @@ class DBConnectionSetterProvider extends ServiceProvider
             __DIR__ . '/config/country.php' => config_path('country.php'),
         ]);
 
+        $this->publishes([
+            __DIR__ . '/config/dbsetter.php' => config_path('dbsetter.php'),
+        ]);
 
-        config(['database.connections.default-mysql' => [
+
+
+        config(['connections.default-mysql' => [
             'driver' => 'mysql',
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
@@ -85,7 +140,7 @@ class DBConnectionSetterProvider extends ServiceProvider
             'engine' => null
         ]]);
 
-        config(['database.connections.default-mongo' => [
+        config(['connections.default-mongo' => [
             'driver' => env('DB_CONNECTION_MONGODB'),
             'host' => env('DB_HOST_MONGODB', '127.0.0.1'),
             'port' => env('DB_PORT_MONGODB', '27017'),
