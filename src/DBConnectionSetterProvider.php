@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Karu\DBConnectionSetter\Console\ClearCache;
 use Karu\DBConnectionSetter\Console\CustomMigration;
+use Karu\DBConnectionSetter\Console\CustomQueueRetry;
 use Karu\DBConnectionSetter\Console\CustomQueueWork;
 use Karu\DBConnectionSetter\Console\CustomSeed;
 use Karu\DBConnectionSetter\Console\PermisionAssignRole;
@@ -39,6 +40,10 @@ class DBConnectionSetterProvider extends ServiceProvider
 
         $this->app->extend('command.queue.work', function () {
             return new CustomQueueWork(app('queue.worker'), app('cache.store'));
+        });
+
+        $this->app->extend('command.queue.retry', function () {
+            return new CustomQueueRetry(app('queue.worker'), app('cache.store'));
         });
 
 //        $this->app->bind(WorkCommand::class, function ($app) {

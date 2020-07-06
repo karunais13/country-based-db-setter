@@ -12,6 +12,8 @@ class DBConnectionSetterHelper
 
     public function setDBConnection($country)
     {
+        config(['dbsetter.current_connection_country' => $country]);
+
         if( config('dbsetter.mysql') ) {
             DB::purge('currentHost');
 
