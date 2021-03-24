@@ -10,6 +10,7 @@ class CustomMigration extends MigrateCommand
     private $_country;
 
     protected $signature = 'migrate-all {--force : Force the operation to run when in production}
+                {--country= : Run migration for provided country}                
                 {--database= : The database connection to use}
                 {--path= : The path to the migrations files to be executed}
                 {--realpath : Indicate any provided migration file paths are pre-resolved absolute paths}
@@ -32,7 +33,12 @@ class CustomMigration extends MigrateCommand
 
     public function handle()
     {
-        $countries = DBConnectionHelper::countryListing();
+        if( $this->option('country') ){
+            $countries = DBConnectionHelper::countryListing()->where('country_code', $this->option('country'));
+        }else{
+            $countries = DBConnectionHelper::countryListing();
+        }
+
         foreach( $countries as $key => $country ){
             if( DBConnectionHelper::checkDBExists($country->country_code) ){
                 $this->_country = $country->country_code;

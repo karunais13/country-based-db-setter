@@ -4,6 +4,7 @@ namespace Karu\DBConnectionSetter\Console;
 
 use DBConnectionHelper;
 use Illuminate\Database\Console\Seeds\SeedCommand;
+use Symfony\Component\Console\Input\InputOption;
 
 class CustomSeed extends SeedCommand
 {
@@ -27,11 +28,12 @@ class CustomSeed extends SeedCommand
 
     public function handle()
     {
-        if (! $this->confirmToProceed()) {
-            return;
+        if( $this->option('country') ){
+            $countries = DBConnectionHelper::countryListing()->where('country_code', $this->option('country'));
+        }else{
+            $countries = DBConnectionHelper::countryListing();
         }
 
-        $countries = DBConnectionHelper::countryListing();
         foreach( $countries as $key => $country ){
             if( DBConnectionHelper::checkDBExists($country->country_code) ){
                 $this->_country = $country->country_code;
@@ -48,5 +50,18 @@ class CustomSeed extends SeedCommand
         dump('Database Connection : '. config('database.connections.currentHost.database'));
 
         return 'currentHost';
+    }
+
+    protected function getOptions()
+    {
+        return [
+            ['class', null, InputOption::VALUE_OPTIONAL, 'The class name of the root seeder', 'DatabaseSeeder'],
+
+            ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to seed'],
+
+            ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production'],
+
+            ['country', null, InputOption::VALUE_OPTIONAL, 'Run seed for provided country'],
+        ];
     }
 }
