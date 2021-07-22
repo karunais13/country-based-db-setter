@@ -14,6 +14,7 @@ use Karu\DBConnectionSetter\Console\PermisionAssignRoleAll;
 use Karu\DBConnectionSetter\Console\PermisionCreate;
 use Karu\DBConnectionSetter\Console\PermisionCreateDefaultRole;
 use Karu\DBConnectionSetter\Console\PermisionCreateRole;
+use Karu\DBConnectionSetter\Queue\DBQueueServiceProvider;
 
 class DBConnectionSetterProvider extends ServiceProvider
 {
@@ -46,15 +47,15 @@ class DBConnectionSetterProvider extends ServiceProvider
             return new CustomQueueRetry(app('queue.worker'), app('cache.store'));
         });
 
-//        $this->app->bind(WorkCommand::class, function ($app) {
-//            return new WorkCommand($app['queue.worker'], $app['cache.store']);
-//        });
+        $this->app->singleton('queue', function () {
+            return $this->app->loadComponent('queue', DBQueueServiceProvider::class, 'queue');
+        });
+
         $this->commands(
             'command.migrate-all',
             'command.db.seed-all',
             'command.db.connection-clear'
         );
-
         $this->app->singleton(
             'command.db.connection-clear',
             function ($app) {
