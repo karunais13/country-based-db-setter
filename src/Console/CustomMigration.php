@@ -28,7 +28,7 @@ class CustomMigration extends MigrateCommand
 
     public function __construct()
     {
-        parent::__construct(app('migrator'));
+        parent::__construct(app('migrator'), app('events'));
     }
 
     public function handle()
