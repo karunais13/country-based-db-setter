@@ -35,6 +35,9 @@ class CustomSeed extends SeedCommand
         }
 
         foreach( $countries as $key => $country ){
+
+            $this->error("Seed for country database : $country->country_code");
+
             if( DBConnectionHelper::checkDBExists($country->country_code) ){
                 $this->_country = $country->country_code;
 
